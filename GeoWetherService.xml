@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<proxy xmlns="http://ws.apache.org/ns/synapse"
+       name="GeoWetherService"
+       transports="http,https"
+       statistics="disable"
+       trace="disable"
+       startOnLoad="true">
+   <target>
+      <inSequence>
+         <property name="uri.var.lat"
+                   expression="$url:lat"
+                   scope="default"
+                   type="STRING"/>
+         <property name="uri.var.lon"
+                   expression="$url:lon"
+                   scope="default"
+                   type="STRING"/>
+         <call>
+            <endpoint>
+               <http uri-template="http://nominatim.openstreetmap.org/reverse?lat={uri.var.lat}&amp;lon={uri.var.lat}"/>
+            </endpoint>
+         </call>
+         <property name="uri.var.q"
+                   expression="//reversegeocode/addressparts/city"
+                   scope="default"
+                   type="STRING"/>
+         <property name="uri.var.appid"
+                   value="d48d1d792d35b407cf084959f3f83135"
+                   scope="default"
+                   type="STRING"/>
+         <call>
+            <endpoint>
+               <http uri-template="http://api.openweathermap.org/data/2.5/weather?q={uri.var.q}&amp;appid={uri.var.appid}"/>
+            </endpoint>
+         </call>
+         <respond/>
+      </inSequence>
+      <outSequence>
+         <payloadFactory media-type="json">
+            <format>{ "coord" : "$1" }</format>
+            <args>
+               <arg evaluator="json" expression="$.coord.lon"/>
+            </args>
+         </payloadFactory>
+      </outSequence>
+   </target>
+   <description/>
+</proxy>
+                                
