@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<proxy xmlns="http://ws.apache.org/ns/synapse"
+       name="esb"
+       transports="http,https"
+       statistics="disable"
+       trace="disable"
+       startOnLoad="true">
+   <target>
+      <inSequence>
+         <call>
+            <endpoint name="REVERSE">
+               <address uri="http://nominatim.openstreetmap.org/reverse"/>
+            </endpoint>
+         </call>
+         <property name="uri.var.city" expression="//reversegeocode/addressparts/city"/>
+         <property name="city" expression="//reversegeocode/addressparts/city"/>
+         <property name="country" expression="//reversegeocode/addressparts/country"/>
+         <filter source="boolean(get-property('city'))" regex="true">
+            <then>
+               <call>
+                  <endpoint name="WEATHER">
+                     <http method="GET"
+                           uri-template="http://api.openweathermap.org/data/2.5/weather?appid={uri.var.appid}&amp;q={uri.var.city}"/>
+                     <property name="uri.var.appid" value="54734d703ab4b80b9a0187ea2cc8c906"/>
+                  </endpoint>
+               </call>
+               <send/>
+            </then>
+            <else>
+               <payloadFactory media-type="json">
+                  <format>{"Error":"Canot find the city"}</format>
+                  <args/>
+               </payloadFactory>
+               <send/>
+               <drop/>
+            </else>
+         </filter>
+      </inSequence>
+   </target>
+   <description/>
+</proxy>
+                                

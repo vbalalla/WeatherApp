@@ -13,7 +13,7 @@
 
   <section>
 
-    <h1><?php echo $_GET['city']; ?>, <?php echo $_GET['country']; ?> <a href="index.html" class="add">+</a></h1>
+    <h1><?php echo $_GET['city']; ?>, <?php echo $_GET['country']; ?> <a href="index.php" class="add">+</a></h1>
 
     <div class="temperature entypo-light-up">
       <h2 style=""><?php echo $_GET['temp']; ?><span class="degree-symbol">°</span>C<span class="celcius">| F</span></h2>
